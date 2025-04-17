@@ -19,26 +19,29 @@ class MyClientController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:100|unique:my_client,slug',
-            'client_prefix' => 'required|string|max:4', 
+            'client_prefix' => 'required|string|max:4',
             'is_project' => 'required|in:0,1',
             'self_capture' => 'required|string|max:1',
             'address' => 'nullable|string',
             'phone_number' => 'nullable|string',
             'city' => 'nullable|string',
+            'client_logo' => 'nullable|image|mimes:jpg,jpeg,png,bmp|max:2048',
         ]);
 
-        $clientLogo = null;
+        $clientLogo = 'no-image.jpg';
         if ($request->hasFile('client_logo')) {
             $clientLogo = $request->file('client_logo')->store('client_logos', 's3');
         }
 
         $client = my_client::create([
-            'name' => $request->name,
-            'slug' => $request->slug,
-            'client_logo' => $clientLogo ?? 'no-image.jpg',
-            'address' => $request->address,
-            'phone_number' => $request->phone_number,
-            'city' => $request->city,
+            'name' => $validatedData['name'],
+            'slug' => $validatedData['slug'],
+            'client_prefix' => $validatedData['client_prefix'],
+            'is_project' => $validatedData['is_project'],
+            'client_logo' => $clientLogo,
+            'address' => $validatedData['address'],
+            'phone_number' => $validatedData['phone_number'],
+            'city' => $validatedData['city'],
         ]);
 
         Redis::set($client->slug, json_encode($client));
