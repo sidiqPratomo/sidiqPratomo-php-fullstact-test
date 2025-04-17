@@ -46,7 +46,10 @@ class MyClientController extends Controller
 
         Redis::set($client->slug, json_encode($client));
 
-        return response()->json($client, 201);
+        return response()->json([
+            'message' => 'Client successfully created.',
+            'client' => $client,
+        ], 201);
     }
 
     public function show($slug)
