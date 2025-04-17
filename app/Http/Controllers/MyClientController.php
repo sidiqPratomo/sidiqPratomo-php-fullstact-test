@@ -16,13 +16,15 @@ class MyClientController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:250',
-            'slug' => 'required|string|max:100',
-            'client_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:100|unique:my_client,slug',
+            'client_prefix' => 'required|string|max:4', 
+            'is_project' => 'required|in:0,1',
+            'self_capture' => 'required|string|max:1',
             'address' => 'nullable|string',
-            'phone_number' => 'nullable|string|max:50',
-            'city' => 'nullable|string|max:50',
+            'phone_number' => 'nullable|string',
+            'city' => 'nullable|string',
         ]);
 
         $clientLogo = null;
