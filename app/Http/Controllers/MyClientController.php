@@ -94,6 +94,16 @@ class MyClientController extends Controller
         return response()->json($client);
     }
 
+    public function softDelete($slug)
+    {
+        $client = my_client::where('slug', $slug)->firstOrFail();
+        $client->update(['deleted_at' => now()]);
+
+        Redis::del($slug);
+
+        return response()->json(['message' => 'Client deleted (soft)']);
+    }
+
     public function destroy($slug)
     {
         $client = my_client::where('slug', $slug)->first();
